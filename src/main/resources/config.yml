@@ -1,0 +1,15 @@
+# https://mallusrgreat.gitbook.io/mallusrgreats-plugins/
+port: 4567
+# ^^ The port the API will run on
+
+users:
+  # If not enabled, it will not appear in the json object returned.
+  enabled:
+    - "username"
+    - "last_seen"
+    - "balance"
+
+  # Set the values here, remember to make use of the in-built placeholders and methods.
+  username: "{username}"
+  last_seen: "{last_seen}"
+  balance: "{papi:%vault_eco_balance%}"
