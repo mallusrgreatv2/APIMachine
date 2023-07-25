@@ -15,3 +15,6 @@ Fork this project, make your changes in the main `src/main/java/tk/darklegacymc/
 
 This project makes use of the [GPL-3.0](https://choosealicense.com/licenses/gpl-3.0/) license.
 
+# Links
+- [Wiki](https://mallusrgreat.gitbook.io/mallusrgreats-plugins/)
+- [Discord](https://discord.gg/GGCqxwY2nQ)
