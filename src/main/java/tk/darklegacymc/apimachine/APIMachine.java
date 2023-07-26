@@ -14,29 +14,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import me.clip.placeholderapi.PlaceholderAPI;
+import tk.darklegacymc.apimachine.commands.ReloadCommand;
 
 import static spark.Spark.*;
 
 public final class APIMachine extends JavaPlugin {
-    FileConfiguration config;
+    public FileConfiguration config;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
         config = getConfig();
-        config.addDefault("port", 4567);
-        config.addDefault("users.username", "{username}");
-        config.addDefault("users.last_seen", "{last_seen}");
-        config.addDefault("users.balance", "{papi:%vault_eco_balance%}");
-        config.options().copyDefaults(true);
-        saveConfig();
+        saveDefaultConfig();
+        port(config.getInt("port"));
         setupRoutes();
+        this.getCommand("apimachine").setExecutor(new ReloadCommand(this));
         this.getLogger().info("APIMachine started. Wiki: https://mallusrgreat.gitbook.io/mallusrgreats-plugins/");
     }
 
     public void setupRoutes() {
         Gson gson = new Gson();
-        port(config.getInt("port"));
         get("/api/users/:name", (req, res) -> {
             String username = req.params("name");
             OfflinePlayer offlinePlayer = getServer().getOfflinePlayer(username);
@@ -44,9 +41,9 @@ public final class APIMachine extends JavaPlugin {
                 res.status(404); // Not Found
                 return "Invalid";
             }
-            List<String> enabled = config.getStringList("users.enabled");
+            List<String> userEnabled = config.getStringList("users.enabled");
             Map<String, Object> playerData = new HashMap<>();
-            enabled.forEach(enabledKey -> {
+            userEnabled.forEach(enabledKey -> {
                 String value = config.getString("users." + enabledKey);
                 if (value == null) {
                     getLogger().warning("A value returned null: " + enabledKey);
@@ -64,7 +61,7 @@ public final class APIMachine extends JavaPlugin {
                 if (value.contains("{papi:")) {
                     Pattern papiPattern = Pattern.compile("\\{papi:(.*?)\\}");
                     Matcher matcher = papiPattern.matcher(value);
-                    StringBuffer sb = new StringBuffer();
+                    StringBuilder sb = new StringBuilder();
                     while (matcher.find()) {
                         String placeholder = matcher.group(1);
                         String replacement = PlaceholderAPI.setPlaceholders(offlinePlayer, placeholder);
@@ -81,5 +78,41 @@ public final class APIMachine extends JavaPlugin {
 
             return gson.toJson(playerData);
         });
+        get("/api/global", (req, res) -> {
+            List<String> userEnabled = config.getStringList("global.enabled");
+            Map<String, Object> playerData = new HashMap<>();
+            userEnabled.forEach(enabledKey -> {
+                String value = config.getString("global." + enabledKey);
+                if (value == null) {
+                    getLogger().warning("A value returned null: " + enabledKey);
+                    return;
+                }
+
+                // Handle {papi:...} placeholders in the balance field
+                if (value.contains("{papi:")) {
+                    Pattern papiPattern = Pattern.compile("\\{papi:(.*?)\\}");
+                    Matcher matcher = papiPattern.matcher(value);
+                    StringBuilder sb = new StringBuilder();
+                    while (matcher.find()) {
+                        String placeholder = matcher.group(1);
+                        String replacement = PlaceholderAPI.setPlaceholders(null, placeholder);
+                        matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+                    }
+                    matcher.appendTail(sb);
+                    value = sb.toString();
+                }
+
+                playerData.put(enabledKey, value);
+            });
+
+            res.type("application/json");
+
+            return gson.toJson(playerData);
+        });
     }
+    public void reloadConfigValues() {
+        reloadConfig();
+        config = getConfig();
+    }
+
 }
