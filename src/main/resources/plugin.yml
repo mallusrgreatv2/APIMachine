@@ -3,3 +3,13 @@ version: '${project.version}'
 main: tk.darklegacymc.apimachine.APIMachine
 api-version: '1.20'
 depend: [PlaceholderAPI]
+permissions:
+  apimachine.reload:
+    description: "Reload the plugin to apply changes you make in config.yml"
+
+commands:
+  apimachine:
+    description: "The main command of APIMachine."
+    permission: "apimachine.reload"
+    permission-message: "You do not have permission to use this command."
+    usage: /apimachine <reload>

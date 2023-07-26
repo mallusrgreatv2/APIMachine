@@ -1,15 +1,25 @@
 # https://mallusrgreat.gitbook.io/mallusrgreats-plugins/
 port: 4567
-# ^^ The port the API will run on
+# ^^ The port the API will run on. If changed, requires restart.
 
-users:
-  # If not enabled, it will not appear in the json object returned.
-  enabled:
-    - "username"
-    - "last_seen"
-    - "balance"
+# You can create custom endpoints here.
+## INFO
+##  require_player
+##    If the endpoint requires a player. If you named the endpoint "hello", then the link will be "/api/hello/(username)" if it is set to true.
+##    If true, the in-built placeholders "{username}" and "{last_seen}" are available.
+##    The format of the in-built variable "{last_seen}" is yyyy/MM/dd HH:mm:ss
+##  object
+##    The actual keys and values to be specified in the object.
+##    You can have PlaceholderAPI placeholder values using "{papi:%placeholder%}".
+endpoints:
+  users:
+    require_player: true
+    object:
+      username: "{username}"
+      last_seen: "{last_seen}"
+      balance: "{papi:%vault_eco_balance%}"
 
-  # Set the values here, remember to make use of the in-built placeholders and methods.
-  username: "{username}"
-  last_seen: "{last_seen}"
-  balance: "{papi:%vault_eco_balance%}"
+  global:
+    require_player: false
+    object:
+      "server_name": "{papi:%server_name%}"
