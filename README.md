@@ -4,7 +4,7 @@
 Create a RESTful API for your Minecraft server, with custom values, such as a PlaceholderAPI placeholder value.
 
 ## Download
-You can get a free copy [in SpigotMC](https://www.spigotmc.org/resources/111445/) or in [GitHub Releases](https://github.com/mallusrgreatv2/APIMachine/releases/latest)
+You can get the plugin in [GitHub Releases](https://github.com/mallusrgreatv2/APIMachine/releases/latest)
 
 ## Contributing
 
